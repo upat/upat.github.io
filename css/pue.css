@@ -1,1 +1,33 @@
-@font-face {	font-family: 'rounded-mplus';	src: url('/font/rounded-mplus-1c-medium.ttf') format('truetype');}body {	-webkit-text-size-adjust: 100%;	font-size: 24px;	font-family: 'rounded-mplus', '游ゴシック Regular', 'メイリオ';}p {	margin: 10px;	word-wrap: break-word;}span#counter {	margin-left: 5px;	vertical-align: middle;}p#result_txt {	margin: 15px 10px 10px 0px;}input {	margin: 0px 10px 20px 10px;}input#up_button {	margin-left: 0px;}
+@font-face {
+	font-family: 'rounded-mplus';
+	src: url('/font/rounded-mplus-1c-medium.ttf') format('truetype');
+}
+
+body {
+	-webkit-text-size-adjust: 100%;
+	font-size: 24px;
+	font-family: 'rounded-mplus', '游ゴシック Regular', 'メイリオ';
+}
+
+p {
+	margin: 10px;
+	word-wrap: break-word;
+}
+
+span#counter {
+	margin-left: 5px;
+	vertical-align: middle;
+}
+
+p#result_txt {
+	margin: 15px 10px 10px 0px;
+}
+
+input {
+	margin: 0px 10px 20px 10px;
+}
+
+input#up_button {
+	margin-left: 0px;
+}
+
