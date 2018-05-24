@@ -18,6 +18,13 @@ window.twttr = (function(d, s, id){
 	return t;
 }(document, 'script', 'twitter-wjs'));
 
+// カウンタ文字色用カラーテーブル
+// const cctable = ['#ffa3a3', '#ffa3d1', '#d1a3ff', '#a3a3ff', '#a3d1ff', '#a3ffff', '#a3ffd1', '#a3ffa3', '#d1ffa3', '#ffd1a3']; // ポリゴンショックしそう
+const cctable = ['#adffad', '#a3ffa3', '#99ff99', '#8eff8e', '#84ff84', '#84ffc1', '#8effc6', '#99ffcc', '#a3ffd1', '#adffd6'];
+
+// 取得したブラウザ内の横幅をjquery経由で反映させる
+$('p').css('width', document.documentElement.clientWidth);
+
 // 文字テンプレート
 const str_template1 = 'なぎうなぎ';
 const str_template2 = 'ぷぇっぷぇ';
@@ -25,11 +32,8 @@ const str_template2 = 'ぷぇっぷぇ';
 // 遅延ループで使用する秒数(ms)
 const delay_num = 10;
 
-// テキスト表示領域の幅
-const text_width = 700;
-
 // カウントする文字、テキスト入力字数の閾値
-const max_counter = 5000;
+const max_counter = 7500;
 const max_str = 5; // 以上
 const min_str = 3; // 以下
 
@@ -43,8 +47,15 @@ let counter = 0;
 const d3_html = d3.select('body');
 
 // テキスト
-d3_html.append('p').style('width', text_width + 'px')
+d3_html.append('p')
 	.text(min_str + '～' + max_str + '文字,' + max_counter + '字まで対応. 絵文字とか変な文字でも大丈夫…なはず.');
+
+// IE判定
+if(isIE()){
+	d3_html.append('p')
+		.style('color', 'orange')
+		.text('Internet Explorerでは誤作動の可能性があります.');
+}
 
 // テキストボックスの設置
 d3_html.append('input')
@@ -55,9 +66,6 @@ d3_html.append('input')
 		id       : 'text_box'
 	});
 
-// 空白スペース
-d3_html.append('span').text(' ');
-
 // 汎用ボタン設置
 d3_html.append('input')
 	.attrs({
@@ -66,9 +74,6 @@ d3_html.append('input')
 		onclick : 'text_box_onbuttonclick()'
 	});
 
-// 空白スペース
-d3_html.append('span').text(' ');
-
 // カウンタの設置
 d3_html.append('span').attr('id', 'counter').text(counter + ' 回');
 
@@ -76,7 +81,7 @@ d3_html.append('span').attr('id', 'counter').text(counter + ' 回');
 const cnt_txt = document.getElementById('counter');
 
 // 改行
-d3_html.append('p');
+d3_html.append('br');
 
 // なぎるボタン設置
 d3_html.append('input')
@@ -85,9 +90,6 @@ d3_html.append('input')
 		value   : 'なぎる',
 		onclick : 'pueeeee(str_template1);'
 	});
-
-// 空白スペース
-d3_html.append('span').text(' ');
 
 // ぷぇるボタン設置
 d3_html.append('input')
@@ -98,19 +100,29 @@ d3_html.append('input')
 	});
 
 // テキスト表示領域の確保
-const txt = d3_html.append('div').attr('width', text_width + 'px');
+const txt = d3_html.append('div');
 
-// 乱数生成 ( https://lab.syncer.jp/Web/JavaScript/Snippet/15/ )
-function create_random_num(max){
-	const min = 0; // 乱数の最小値(配列の添字に使うので0固定)
-	
-	return  Math.floor(Math.random() * (max + 1 - min)) + min;
+// 0～(入力値-1)の間で乱数生成
+function create_random_num(num){
+	return  Math.floor(Math.random() * num);
 }
 
-// サロゲートペアを考慮した文字数カウントを行い、トリミングする
+// IEか否かの判定 ( https://developers.wano.co.jp/ie11-useragent-js%E3%81%AEie%E5%88%A4%E5%AE%9A%E5%BC%8F/ )
+function isIE(){
+	let userAgent = window.navigator.userAgent.toLowerCase();
+	if( userAgent.match(/(msie|MSIE)/) || userAgent.match(/(T|t)rident/) ) {
+		return true;
+		// let ieVersion = userAgent.match(/((msie|MSIE)\s|rv:)([\d\.]+)/)[3];
+		// ieVersion = parseInt(ieVersion);
+	} else {
+		return false;
+	}
+}
+
+// input要素へ入力された文字に対してサロゲートペアを考慮した文字数カウントを行い、トリミングする
 function str_counter(){
 	const input_str = document.getElementById('text_box');
-	const str_array = Array.from(input_str.value);
+	const str_array = Arrayfrom(input_str.value);
 	const str_len = str_array.length;
 	
 	// 文字数がmin_str未満の場合はフラグをfalse
@@ -128,7 +140,16 @@ function str_counter(){
 	}
 }
 
-// 文字配列の結合(joinが遅いので)
+// サロゲートペアを考慮した文字列->文字配列変換. Array.from()より5倍早い.
+// ○ぁっきんIE ( https://qiita.com/YusukeHirao/items/2f0fb8d5bbb981101be0 )
+function Arrayfrom(str){
+	// 0xD800から0xDBFF、0xDC00～0xDFFF、半角スペース・タブ・改行のどれか1文字、
+	// 半角スペース・タブ・改行以外の1文字を文字列全体から検索する.
+	// 文字列がnull(空文字)の場合は空の配列を返す.
+	return str.match(/[\uD800-\uDBFF][\uDC00-\uDFFF]|[\s\S]|^$/g) || [];
+}
+
+// 文字配列の結合. join()より2～3倍早い.
 function str_comb(str, length){
 	let output_str = '', i;
 	
@@ -142,7 +163,7 @@ function str_comb(str, length){
 // 半角・全角スペースの可視化
 function check_space(str){
 	if(str == ' ' || str == '　'){
-		return '[ ]';
+		return '[' + str + ']';
 	}else{
 		return str;
 	}
@@ -160,7 +181,7 @@ function text_box_onbuttonclick(){
 	}
 }
 
-// テンプレートと一致するまでテンプレートからランダムに1文字ずつ画面出力を行う関数
+// テンプレートと一致するまでテンプレートからランダムに1文字ずつ画面出力を行うメイン処理
 function pueeeee(template){
 	// ボタン連打防止
 	if(counter != 0){
@@ -168,7 +189,7 @@ function pueeeee(template){
 	}
 	
 	// templateの配列化
-	const template_array = Array.from(template); // Array.from()はサロゲートペア対応の配列変換
+	const template_array = Arrayfrom(template);
 	const tmp_array_len = template_array.length; // 文字数取得
 	if(tmp_array_len != template.length){        // サロゲートペアを含んだ場合
 		console.log('warning: input surrogate pair.');
@@ -185,10 +206,6 @@ function pueeeee(template){
 	txt.append('p')
 		.attrs({
 			id : 'text_data'
-		})
-		.styles({
-			'word-wrap' : 'break-word',
-			'width'     : text_width + 'px'
 		});
 	
 	// text_data要素の取得
@@ -206,27 +223,34 @@ function pueeeee(template){
 		if(compstr_len >= tmp_array_len){
 			compare_str.shift();
 		}
-		compare_str.push(template_array[create_random_num(tmp_array_len-1)]);         // 配列へpush
+		compare_str.push(template_array[create_random_num(tmp_array_len)]);           // 配列へpush
 		compstr_len = compare_str.length;
 		txt_data.insertAdjacentHTML('beforeend', check_space(compare_str.slice(-1))); // 既存の要素内テキストへ追加(上書きではない)
 		
 		// カウンタの増加・テキストを更新(=上書き)
 		cnt_txt.textContent = (++counter) + ' 回';
+		$('#counter').css('color', cctable[Math.floor(counter/10%10)]);
 		
 		// 異常終了のパターン(一応動作してる)
 		if(compstr_len > tmp_array_len || counter >= max_counter){
 			sel_txtdata.append('p')
-				.attr('id', 'err_txt')
+				.attr('id', 'result_txt')
 				.text('ぷエラー counter : ' + counter + ', length : ' + compstr_len + ' ' + tmp_array_len);
-			page_scroll($('#err_txt').offset().top);
 			
 			// 画面上部へ戻るボタンの設置
 			sel_txtdata.append('input')
 				.attrs({
 					type    : 'button',
 					value   : '画面上へ',
-					onclick : 'page_scroll(0);'
+					onclick : 'page_scroll(0);',
+					id      : 'up_button'
 				});
+				
+			// 画面最下部へスクロールするための目印
+			sel_txtdata.append('p').attr('id', 'p_footer');
+			
+			// 終了後に画面下へスクロール
+			page_scroll($('#p_footer').offset().top);
 			
 			counter = 0;        // カウンタ初期化(ボタンの有効化)
 			clearInterval(exe); // ループ停止
@@ -235,13 +259,13 @@ function pueeeee(template){
 		// 正常に終わるパターン
 		if(str_comb(compare_str, compstr_len) == template){
 			const tweet_text = counter + '回 『' + template + '』しました。ぷぇーっ！';
-			sel_txtdata.append('p').text(tweet_text);
+			sel_txtdata.append('p').attr('id', 'result_txt').text(tweet_text);
 			sel_txtdata.append('div').attr('id', 'tweet_button');
 			
 			// ツイートボタンの設置(火狐では初期設定で弾かれるので例外処理有)
 			try{
 				twttr.widgets.createShareButton(
-					'https://bit.ly/2x4dBQM',  // URL(非表示の場合は空白スペースを入れること)
+					'https://upat.github.io/pue.html',  // URL(非表示の場合は空白スペースを入れること)
 					document.getElementById('tweet_button'),
 					{
 						size     : 'large',    // ツイートボタンの大きさ
@@ -253,17 +277,15 @@ function pueeeee(template){
 				console.log(e);
 			}
 			
-			// 画面に表示されている縦幅とコンテンツの縦幅の比較
+			// 画面に表示されている縦幅とbody要素の縦幅の比較
 			if(document.documentElement.clientHeight < document.body.clientHeight){
-				// 空白スペース
-				sel_txtdata.append('span').text(' ');
-				
 				// 画面上部へ戻るボタンの設置
 				sel_txtdata.append('input')
 					.attrs({
 						type    : 'button',
 						value   : '画面上へ',
-						onclick : 'page_scroll(0);'
+						onclick : 'page_scroll(0);',
+						id      : 'up_button'
 					});
 			}
 			
