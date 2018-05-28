@@ -1,0 +1,39 @@
+@font-face {
+	font-family: 'rounded-mplus';
+	src: url('/font/rounded-mplus-1c-medium.ttf') format('truetype');
+}
+
+body {
+	-webkit-text-size-adjust: 100%;
+	font-size: 24px;
+	font-family: 'rounded-mplus', '游ゴシック Regular', 'メイリオ';
+}
+
+div#result_txt {
+	margin-left: 10px;
+}
+
+div#tweet_button {
+	margin-top: 10px;
+}
+
+p {
+	margin: 0px;
+	word-wrap: break-word;
+}
+
+span {
+	margin-left: 5px;
+	vertical-align: middle;
+}
+
+p#result_txt {
+	margin: 15px 10px 10px 0px;
+}
+
+input, select {
+	font-family: 'rounded-mplus', '游ゴシック';
+	font-size: 24px;
+	margin: 10px;
+}
+
