@@ -1,23 +1,3 @@
-// ツイートボタン設置の前準備
-// https://dev.twitter.com/web/javascript/loading (真下のコード)
-// https://dev.twitter.com/web/tweet-button/parameters (パラメーター参考)
-// https://dev.twitter.com/web/tweet-button/javascript-create
-window.twttr = (function(d, s, id){
-	let js, fjs = d.getElementsByTagName(s)[0], t = window.twttr || {};
-	if (d.getElementById(id)) return t;
-	js = d.createElement(s);
-	js.id = id;
-	js.src = 'https://platform.twitter.com/widgets.js';
-	fjs.parentNode.insertBefore(js, fjs);
-
-	t._e = [];
-	t.ready = function(f) {
-		t._e.push(f);
-	};
-
-	return t;
-}(document, 'script', 'twitter-wjs'));
-
 // カウンタ文字色用カラーテーブル
 // const cctable = ['#ffa3a3', '#ffa3d1', '#d1a3ff', '#a3a3ff', '#a3d1ff', '#a3ffff', '#a3ffd1', '#a3ffa3', '#d1ffa3', '#ffd1a3']; // ポリゴンショックしそう
 const cctable = ['#adffad', '#a3ffa3', '#99ff99', '#8eff8e', '#84ff84', '#84ffc1', '#8effc6', '#99ffcc', '#a3ffd1', '#adffd6'];
