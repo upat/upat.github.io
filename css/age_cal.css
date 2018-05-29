@@ -1,12 +1,13 @@
 @font-face {
 	font-family: 'rounded-mplus';
 	src: url('/font/rounded-mplus-1c-medium.ttf') format('truetype');
+	font-display: swap;
 }
 
 body {
 	-webkit-text-size-adjust: 100%;
 	font-size: 24px;
-	font-family: 'rounded-mplus', '游ゴシック Regular', 'メイリオ';
+	font-family: 'rounded-mplus', sans-serif;
 }
 
 div#result_txt {
@@ -32,7 +33,7 @@ p#result_txt {
 }
 
 input, select {
-	font-family: 'rounded-mplus', '游ゴシック';
+	font-family: 'rounded-mplus', sans-serif;
 	font-size: 24px;
 	margin: 10px;
 }
