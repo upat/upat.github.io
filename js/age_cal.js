@@ -122,22 +122,22 @@ function age_calculation(){
 	const age = document.getElementById('age_txt');
 	if(!age.value){ age.value = default_age; }
 	
-	// 入力値を入れる
-	const input_date = new Date(year.value, month.value, 1);
+	// 入力値を入れる(年は100未満の場合に計算が狂うので比較用のフォーマットに)
+	const input_date = new Date(now_date.getFullYear(), month.value, 1);
 	
 	// 実年齢
-	let actual_age = now_date.getFullYear() - input_date.getFullYear();
+	let actual_age = now_date.getFullYear() - year.value;
 	
 	// 経過月の取得
 	let aa_month = new Date(); // 月計算のために使用
 	aa_month.setDate(1);       // 1日に揃える(日付までは考慮しない)
 	
-	input_date.setFullYear(now_date.getFullYear()); // 月の比較のため、年を合わせる
+	// input_date.setFullYear(now_date.getFullYear()); // 月の比較のため、年を合わせる
 	if(now_date < input_date){                      // 月の比較
 		actual_age--;                               // 年内でも誕生月を跨いでいない時
 	}
 	aa_month.setMonth(now_date.getMonth() - input_date.getMonth()); // 月の差を計算
-	
+
 	// 出力テキスト
 	let result_txt;
 	if(actual_age == age.value){
